@@ -1,0 +1,21 @@
+
+Error (169182): Cannot place I/O pin DCLK in pin location &lt;pin_location&gt; -- possible switch coupling with I/O pin &lt;pin_name&gt; with I/O standard 3.3-V LVTTL in pin location &lt;pin_location&gt;
+Description
+
+You will see this error message if another pin with 3.0V or 3.3V I/O standards is assigned next to the DCLK pin location in Cyclone® III and Cyclone IV E devices in the QFP package, and Cyclone IV GX devices in the QFN package.
+
+ 
+
+This is a restriction on the proximity of selected I/O standard inputs and outputs to the DCLK pin on QFP (Cyclone III and Cyclone IV E) and QFN (Cyclone IV GX) packages. If an I/O is using 3.0V or 3.3V I/O standards, there must be one pad of separation between the I/O and the DCLK for QFP and QFN packages. Therefore you should be cautious not to assign any pin with 3.0V or 3.3V I/O standards next to the DCLK pin location.  2.5V I/O standards are allowed to be adjacent to the DCLK pin.
+
+ 
+
+This I/O placement restriction is to minimize noise coupling from neighboring I/Os to the DCLK pin. Therefore the Quartus® II software checks for this restriction.
+
+ 
+
+If the problem pin has a very low toggle rate (e.g. reset pin), you can apply an I/O MAX TOGGLE RATE assignment of 0MHz on that single-ended pin to bypass this error message.
+
+It is not advisable to apply an I/O MAX TOGGLE RATE setting of 0MHz to any actively switching pin. The pin placement rules in the Quartus II software are enforced to ensure that noisy signals do not corrupt neighboring signals. If you choose to use the I/O MAX TOGGLE RATE setting on switching pins in order to bypass these placement rules, your design may not function as intended.
+
+---
