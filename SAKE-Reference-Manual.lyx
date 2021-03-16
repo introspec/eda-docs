@@ -1,0 +1,135 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass docbook
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format pdf
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+SAKE RISC-V Processor Reference Manual
+\end_layout
+
+\begin_layout Date
+01/04/2021 - v1.0
+\end_layout
+
+\begin_layout Author
+Purpose Research (www.purpe.com)
+\end_layout
+
+\begin_layout Abstract
+Sake is a softcore RISC-V processor capable of exectuing the RV32IM instruction
+ subset.
+ This document provides an overview of its implementation and specifies
+ the operating modes, interrupt handling sequence and its processor and
+ device registers.
+\end_layout
+
+\begin_layout Section
+CPU Architecture Overview
+\end_layout
+
+\begin_layout Standard
+Sake is a von Neumann style processor.
+ It has a 3 stage pipeline and a PC-133 SDRAM controller.
+ The processor and SDRAM memory both run at a frequency of 72 MHz.
+\end_layout
+
+\begin_layout Standard
+The process has 3 UART ports, 5 SPI ports and 2 I2C ports.
+ It also has 3 PWM channels and 16 GPIO pins.
+ All these perirpherals use DMA to exchange data with the processor and
+ have their own individual interrupt vectors for efficent signalling.
+ The GPIO pins are capable of triggering an interrupt on individual level-change
+s.
+\end_layout
+
+\begin_layout Standard
+The processor exposes a flat 32-bit memory model to applications.
+ Interrupts are directed via a 16 entry Interrupt Vector Table.
+ A special CONTEXT-SWITCH instruction is provided to aid in interrupt servicing
+ and context switching.
+ Sake does not support the RISC-V esyscall, ??.
+ instructions.
+\end_layout
+
+\begin_layout Standard
+The processor has 2KB of ROM memory in which the startup bootcode is stored.
+ When the processor is started this 2KB of code is copied from the ROM to
+ main memory address 0x00000000 and exectued thereby begining the boot sequence.
+\end_layout
+
+\end_body
+\end_document
