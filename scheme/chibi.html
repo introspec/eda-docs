@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8"><style type="text/css">
+body {color: #000; background-color: #FFFFF8;}
+div#menu  {font-size: smaller; position: absolute; top: 50px; left: 0; width: 250px; height: 100%}
+div#menu a:link {text-decoration: none}
+div#main  {font-size: large; position: absolute; top: 0; left: 260px; max-width: 590px; height: 100%}
+div#notes {position: relative; top: 2em; left: 620px; width: 200px; height: 0px; font-size: smaller;}
+div#footer {padding-bottom: 50px}
+div#menu ol {list-style-position:inside; padding-left: 5px; margin-left: 5px}
+div#menu ol ol {list-style: lower-alpha; padding-left: 15px; margin-left: 15px}
+div#menu ol ol ol {list-style: decimal; padding-left: 5px; margin-left: 5px}
+h2 { color: #888888; border-top: 3px solid #4588ba; }
+h3 { color: #666666; border-top: 2px solid #4588ba; }
+h4 { color: #222288; border-top: 1px solid #4588ba; }
+.result { color: #000; background-color: #FFEADF; width: 100%; padding: 3px}
+.output { color: #000; background-color: beige; width: 100%; padding: 3px}
+.error { color: #000; background-color: #F0B0B0; width: 100%; padding: 3px}
+.command { color: #000; background-color: #FFEADF; width: 100%; padding: 5px}
+.keyword { color: #800080; background-color: inherit; }
+.type { color: #008000; background-color: inherit; }
+.function { color: #0000FF; background-color: inherit; }
+.variable { color: #B8860B; background-color: inherit; }
+.comment { color: #FF0000; background-color: inherit; }
+.string { color: #BC8F8F; background-color: inherit; }
+.attribute { color: #FF5000; background-color: inherit; }
+.preprocessor { color: #FF00FF; background-color: inherit; }
+.builtin { color: #FF00FF; background-color: inherit; }
+.character { color: #0055AA; background-color: inherit; }
+.syntaxerror { color: #FF0000; background-color: inherit; }
+.diff-deleted { color: #5F2121; background-color: inherit; }
+.diff-added { color: #215F21; background-color: inherit; }
+span.paren1 { color: #AAAAAA; background-color: inherit; }
+span.paren2 { color: #888888; background-color: inherit; }
+span.paren3 { color: #666666; background-color: inherit; }
+span.paren4 { color: #444444; background-color: inherit; }
+span.paren5 { color: #222222; background-color: inherit; }
+span.paren6 { color: #000000; background-color: inherit; }
+</style>
+</head><body><div id="menu"><ol><li><a href="#h2_Introduction">Introduction</a></li><li><a href="#h2_Installation">Installation</a><ol><li><a href="#h3_Compile-TimeOptions">Compile-Time Options</a></li><li><a href="#h3_InstalledPrograms">Installed Programs</a></li></ol></li><li><a href="#h2_DefaultLanguage">Default Language</a><ol><li><a href="#h3_SchemeStandard">Scheme Standard</a></li><li><a href="#h3_ModuleSystem">Module System</a></li><li><a href="#h3_MacroSystem">Macro System</a></li><li><a href="#h3_Types">Types</a></li><li><a href="#h3_Unicode">Unicode</a></li></ol></li><li><a href="#h2_EmbeddinginC">Embedding in C</a><ol><li><a href="#h3_QuickStart">Quick Start</a></li><li><a href="#h3_ContextsandEvaluation">Contexts and Evaluation</a></li><li><a href="#h3_GarbageCollection">Garbage Collection</a></li><li><a href="#h3_CAPIIndex">C API Index</a><ol><li><a href="#h4_TypePredicates">Type Predicates</a></li><li><a href="#h4_Constants">Constants</a></li><li><a href="#h4_StringHandling">String Handling</a></li><li><a href="#h4_Accessors">Accessors</a></li><li><a href="#h4_Constructors">Constructors</a></li><li><a href="#h4_I/O">I/O</a></li><li><a href="#h4_Utilities">Utilities</a></li></ol></li><li><a href="#h3_Exceptions">Exceptions</a></li><li><a href="#h3_Customizing">Customizing</a></li></ol></li><li><a href="#h2_CFFI">C FFI</a><ol><li><a href="#h3_IncludesandInitializations">Includes and Initializations</a></li><li><a href="#h3_StructInterface">Struct Interface</a></li><li><a href="#h3_FunctionandConstantInterface">Function and Constant Interface</a></li><li><a href="#h3_CTypes">C Types</a><ol><li><a href="#h4_BasicTypes">Basic Types</a></li><li><a href="#h4_IntegerTypes">Integer Types</a></li><li><a href="#h4_FloatTypes">Float Types</a></li><li><a href="#h4_StringTypes">String Types</a></li><li><a href="#h4_PortTypes">Port Types</a></li><li><a href="#h4_StructTypes">Struct Types</a></li><li><a href="#h4_Typemodifiers">Type modifiers</a></li></ol></li></ol></li><li><a href="#h2_StandardModules">Standard Modules</a></li><li><a href="#h2_SnowPackageManager">Snow Package Manager</a><ol><li><a href="#h4_QueryingPackagesandStatus">Querying Packages and Status</a></li><li><a href="#h4_ManagingPackages">Managing Packages</a></li><li><a href="#h4_AuthoringPackages">Authoring Packages</a></li><li><a href="#h4_EasyPackaging">Easy Packaging</a></li><li><a href="#h4_OtherImplementations">Other Implementations</a></li></ol></li></ol></div><div id="main"><div><a name="h1_Chibi-Scheme"></a><h1>Chibi-Scheme</h1></div><p>
+</p><div id="notes">Alex Shinn<br>Thu Jun  3 15:51:32 2021
+</div><p>
+</p><center><small>Minimal Scheme Implementation for use as an Extension Language</small></center><p>
+</p><center><a href="http://synthcode.com/wiki/chibi-scheme">http://synthcode.com/wiki/chibi-scheme</a></center><p>
+</p><div><a name="h2_Introduction"></a><h2>Introduction</h2></div><p>
+</p><p>Chibi-Scheme is a very small library with no external dependencies,
+intended for use as an extension and scripting language in C programs.
+In addition to support for lightweight VM-based threads, each VM
+itself runs in an isolated heap allowing multiple VMs to run
+simultaneously in different OS threads.
+</p><p>The default language is the R7RS (scheme base) library, with support
+for all libraries from the small language.  Support for additional
+languages such as JavaScript, Go, Lua and Bash are planned for future
+releases.  Scheme is chosen as a substrate because its first class
+continuations and guaranteed tail-call optimization makes implementing
+other languages easy.
+</p><p>The system is designed in optional layers, beginning with a VM based
+on a small set of opcodes, a set of primitives implemented in C, a
+default language, a module system implementation, and a set of
+standard modules.  You can choose whichever layer suits your needs
+best and customize the rest.  Adding your own primitives or wrappers
+around existing C libraries is easy with the C FFI.
+</p><p>Chibi is known to build and run on 32 and 64-bit Linux, FreeBSD,
+DragonFly, OS X, iOS, Windows (under Cygwin) and Plan9.
+</p><div><a name="h2_Installation"></a><h2>Installation</h2></div><p>
+</p><p>To build, just run "make".  This will provide a shared library
+"libchibi-scheme", as well as a sample "chibi-scheme" command-line
+repl.  The "chibi-scheme-static" make target builds an equivalent
+static executable.  If your make doesn't support GNU make
+conditionals, then you'll need to edit the top of the Makefile to
+choose the appropriate settings.  On Plan9 just run "mk".  You can
+test the build with "make test".
+</p><p>To install run "make install".  If you want to try the executable out
+without installing, you will probably need to set LD_LIBRARY_PATH,
+depending on your platform.  If you have an old version installed,
+run "make uninstall" first, or manually delete the directory.
+</p><p>You can edit the file chibi/features.h for a number of settings,
+mostly disabling features to make the executable smaller.  You can
+specify standard options directly as arguments to make, for example
+</p><pre class="command"><code>make CFLAGS=-Os CPPFLAGS=-DSEXP_USE_NO_FEATURES=1</code></pre><p>
+</p><p>to optimize for size, or
+</p><pre class="command"><code>make LDFLAGS=-L/usr/local/lib CPPFLAGS=-I/usr/local/include</code></pre><p>
+</p><p>to compile against a library installed in /usr/local.
+</p><p>By default Chibi uses a custom, precise, non-moving GC (non-moving is
+important so you can maintain references from C code).  You can link
+against the Boehm conservative GC by editing the features.h file, or
+directly from make with:
+</p><pre class="command"><code>make SEXP_USE_BOEHM=1</code></pre><p>
+</p><p>To compile a static executable, use
+</p><pre class="command"><code>make chibi-scheme-static SEXP_USE_DL=0</code></pre><p>
+</p><p>To compile a static executable with all C libraries statically
+included, first you need to create a clibs.c file, which can be done
+with:
+</p><pre class="command"><code>make clibs.c</code></pre><p>
+</p><p>or edited manually.  Be sure to run this with a non-static
+chibi-scheme.  Then you can make the static executable with:
+</p><pre class="command"><code>make -B chibi-scheme-static SEXP_USE_DL=0 
+
+  CPPFLAGS="-DSEXP_USE_STATIC_LIBS -DSEXP_USE_STATIC_LIBS_NO_INCLUDE=0"
+</code></pre><p>
+</p><p>By default files are installed in /usr/local.  You can optionally
+specify a PREFIX for the installation directory:
+</p><pre class="command"><code>make PREFIX=/path/to/install/
+sudo make PREFIX=/path/to/install/ install
+</code></pre><p>
+</p><div><a name="h3_Compile-TimeOptions"></a><h3>Compile-Time Options</h3></div><p>
+</p><p>The include file <code><span class="string">"chibi/features.h"</span></code> describes a number of
+C preprocessor values which can be enabled or disabled by setting to
+1 or 0 respectively.  For example, the above commands used the
+features <code>SEXP_USE_BOEHM</code>, <code>SEXP_USE_DL</code> and
+<code>SEXP_USE_STATIC_LIBS</code>.  Many features are still experimental
+and may be removed from future releases, but the important features
+are listed below.
+</p><ul><li><code>SEXP_USE_BOEHM</code> - link with the Boehm GC instead of the native Chibi GC</li><li><code>SEXP_USE_DL</code> - allow dynamic linking (enabled by default)</li><li><code>SEXP_USE_STATIC_LIBS</code> - compile the standard C libs statically</li><li><code>SEXP_USE_MODULES</code> - use the module system</li><li><code>SEXP_USE_GREEN_THREADS</code> - use lightweight threads (enabled by default)</li><li><code>SEXP_USE_SIMPLIFY</code> - use a simplification optimizer pass (enabled by default)</li><li><code>SEXP_USE_BIGNUMS</code> - use bignums (enabled by default)</li><li><code>SEXP_USE_FLONUMS</code> - use flonums (enabled by default)</li><li><code>SEXP_USE_RATIOS</code> - use exact ratios (enabled by default)</li><li><code>SEXP_USE_COMPLEX</code> - use complex numbers (enabled by default)</li><li><code>SEXP_USE_UTF8_STRINGS</code> - Unicode support (enabled by default)</li><li><code>SEXP_USE_STRING_INDEX_TABLE</code> - precompute offsets for O(1) <code><span>string-ref</span></code></li><li><code>SEXP_USE_NO_FEATURES</code> - disable almost all features</li></ul><p>
+</p><div><a name="h3_InstalledPrograms"></a><h3>Installed Programs</h3></div><p>
+</p><p>The command-line programs <code>chibi-scheme</code>, <code>chibi-doc</code> and
+<code>chibi-ffi</code> are installed by default, along with manpages.
+<code>chibi-scheme</code> provides a REPL and way to run scripts.  Run -?
+for a brief list of options, or see the man page for more details.
+<code>chibi-doc</code> is the command-line interface to the literate
+documentation system described in
+<a href="lib/chibi/scribble.html">(chibi scribble)</a>, and used to
+build this manual.  <code>chibi-ffi</code> is a tool to build wrappers for
+C libraries, described in the FFI section below.
+</p><div><a name="h2_DefaultLanguage"></a><h2>Default Language</h2></div><p>
+</p><div><a name="h3_SchemeStandard"></a><h3>Scheme Standard</h3></div><p>
+</p><p>The default language is the <code>(scheme <span>base</span>)</code> library from
+<a href="http://scheme-reports.org/">R7RS</a>, which is mostly a
+superset of
+<a href="http://www.schemers.org/Documents/Standards/R5RS/HTML/">R5RS</a>.
+</p><p>The reader defaults to case-sensitive, like R6RS and R7RS but unlike
+R5RS.  You can specify the -f option on the command-line to enable
+case-folding.  The default configuration includes the full numeric
+tower: fixnums, flonums, bignums, exact rationals and complex numbers,
+though this can be customized at compile time.
+</p><p>Full continuations are supported, but currently continuations don't
+take C code into account.  This means that you can call from Scheme to
+C and then from C to Scheme again, but continuations passing through
+this chain may not do what you expect.  The only higher-order C
+functions (thus potentially running afoul of this) in the standard
+environment are <code><span>load</span></code> and <code><span>eval</span></code>.  The result of
+invoking a continuation created by a different thread is also
+currently unspecified.
+</p><p>In R7RS (and R6RS) semantics it is impossible to use two macros from
+different modules which both use the same auxiliary keywords (like
+<code><span>else</span></code> in <code><span>cond</span></code> forms) without renaming one of the
+keywords.  By default Chibi considers all top-level bindings
+effectively unbound when matching auxiliary keywords, so this case
+will "just work".  This decision was made because the chance of
+different modules using the same keywords seems more likely than user
+code unintentionally matching a top-level keyword with a different
+binding, however if you want to use R7RS semantics you can compile
+with <code>SEXP_USE_STRICT_TOPLEVEL_BINDINGS=1</code>.
+</p><p><code><span>load</span></code> is extended to accept an optional environment argument, like
+<code><span>eval</span></code>.  You can also <code><span>load</span></code> shared libraries in addition to
+Scheme source files - in this case the function <code>sexp_init_library</code> is
+automatically called with the following signature:
+</p><p><code>  sexp_init_library(<span class="type">sexp</span> context, <span class="type">sexp</span> self, <span class="type">sexp_sint_t</span> n, <span class="type">sexp</span> environment,
+                    <span class="type">const</span> <span class="type">char</span>* version, sexp_abi_identifier_t abi);
+</code>
+</p><p>Note, as R7RS (and earlier reports) states, "in contrast to other
+dialects of Lisp, the order of evaluation is unspecified [...]".
+Chibi is one of the few implementations which use a right-to-left
+evaluation order, which can be surprising to programmers coming from
+other languages.
+</p><div><a name="h3_ModuleSystem"></a><h3>Module System</h3></div><p>
+</p><p>Chibi supports the R7RS module system natively, which is a simple
+static module system.  The Chibi implementation is actually a
+hierarchy of languages in the style of the
+<a href="http://s48.org/">Scheme48</a> module system, allowing easy
+extension of the module system itself.  As with most features this is
+optional, and can be ignored or completely disabled at compile time.
+</p><p>Modules names are hierarchical lists of symbols or numbers.  A module
+definition uses the following form:
+</p><pre><code>  (define-library (foo <span>bar</span> <span>baz</span>)
+    <span>&lt;library-declarations></span> <span>...</span>)
+</code></pre><p>
+</p><p>where <code>&lt;library-declarations></code> can be any of
+</p><pre><code>  (<span class="keyword">export</span> <span>&lt;id></span> <span>...</span>)                    <span class="comment">;; specify an export list
+</span>  (<span class="keyword">import</span> <span>&lt;import-spec></span> <span>...</span>)           <span class="comment">;; specify one or more imports
+</span>  (<span class="keyword">begin</span> <span>&lt;expr></span> <span>...</span>)                   <span class="comment">;; inline Scheme code
+</span>  (<span class="keyword">include</span> <span>&lt;file></span> <span>...</span>)                 <span class="comment">;; load one or more files
+</span>  (<span class="keyword">include-ci</span> <span>&lt;file></span> <span>...</span>)              <span class="comment">;; as include, with case-folding
+</span>  (<span class="keyword">include-shared</span> <span>&lt;file></span> <span>...</span>)          <span class="comment">;; dynamic load a library (non-R7RS)
+</span>  (<span class="keyword">alias-for</span> <span>&lt;library></span>)                <span class="comment">;; a library alias (non-R7RS)
+</span></code></pre><p>
+</p><p><code>&lt;import-spec></code> can either be a module name or any of
+</p><pre><code>  (<span class="keyword">only</span> <span>&lt;import-spec></span> <span>&lt;id></span> <span>...</span>)
+  (<span class="keyword">except</span> <span>&lt;import-spec></span> <span>&lt;id></span> <span>...</span>)
+  (<span class="keyword">rename</span> <span>&lt;import-spec></span> (&lt;from-id> <span>&lt;to-id></span>) <span>...</span>)
+  (<span class="keyword">prefix</span> <span>&lt;import-spec></span> <span>&lt;prefix-id></span>)
+  (<span class="keyword">drop-prefix</span> <span>&lt;import-spec></span> <span>&lt;prefix-id></span>)   <span class="comment">;; non-R7RS
+</span></code></pre><p>
+</p><p>These forms perform basic selection and renaming of individual
+identifiers from the given module. They may be composed to perform
+combined selection and renaming.
+</p><p>Some modules can be statically included in the initial configuration,
+and even more may be included in image files, however in general
+modules are searched for in a module load path.  The definition of the
+module <code>(foo <span>bar</span> <span>baz</span>)</code> is searched for in the file
+<code><span class="string">"foo/bar/baz.sld"</span></code>.  The default module path includes the
+installed directories, <code><span class="string">"."</span></code> and <code><span class="string">"./lib"</span></code>.  Additional
+directories can be specified with the command-line options <code>-I</code>
+and <code>-A</code> (see the command-line options below) or with the
+<code><span>add-module-directory</span></code> procedure at runtime.  You can search for
+a module file with <code>(find-module-file <span>&lt;file></span>)</code>, or load it with
+<code>(load-module-file <span>&lt;file></span> <span>&lt;env></span>)</code>.
+</p><p>Within the module definition, files are loaded relative to the .sld
+file, and are written with their extension (so you can use whatever
+suffix you prefer - .scm, .ss, .sls, etc.).
+</p><p>Shared modules, on the other hand, should be specified <em>without</em> the
+extension - the correct suffix will be added portably (e.g. .so for Unix and
+.dylib for OS X).
+</p><p>You may also use <code><span>cond-expand</span></code> and arbitrary macro expansions in a
+module definition to generate <code>&lt;module-declarations></code>.
+</p><div><a name="h3_MacroSystem"></a><h3>Macro System</h3></div><p>
+</p><p><code><span>syntax-rules</span></code> macros are provided by default, with the extensions from
+<a href="http://srfi.schemers.org/srfi-46/srfi-46.html">SRFI-46</a>.
+In addition, low-level hygienic macros are provided with a
+syntactic-closures interface, including <code><span>sc-macro-transformer</span></code>,
+<code><span>rsc-macro-transformer</span></code>, and <code><span>er-macro-transformer</span></code>.  A good
+introduction to syntactic-closures can be found at
+<a href="http://community.schemewiki.org/?syntactic-closures">http://community.schemewiki.org/?syntactic-closures</a>.
+</p><p><code><span>identifier?</span></code>, <code><span>identifier->symbol</span></code>, <code><span>identifier=?</span></code>, and
+<code><span>make-syntactic-closure</span></code> and <code><span>strip-syntactic-closures</span></code> are
+also available.
+</p><div><a name="h3_Types"></a><h3>Types</h3></div><p>
+</p><p>You can define new record types with
+<a href="http://srfi.schemers.org/srfi-9/srfi-9.html">SRFI-9</a>, or
+inherited record types with
+<a href="http://srfi.schemers.org/srfi-99/srfi-99.html">SRFI-99</a>.
+These are just syntactic sugar for the following more primitive type
+constructors:
+</p><pre><code>(register-simple-type <span>&lt;name-string></span> <span>&lt;parent></span> <span>&lt;field-names></span>)
+ <span>=></span> <span>&lt;type></span>    <span class="comment">; parent may be #f, field-names should be a list of symbols
+</span>
+(make-type-predicate <span>&lt;opcode-name-string></span> <span>&lt;type></span>)
+ <span>=></span> <span>&lt;opcode></span>  <span class="comment">; takes 1 arg, returns #t iff that arg is of the type
+</span>
+(make-constructor <span>&lt;constructor-name-string></span> <span>&lt;type></span>)
+ <span>=></span> <span>&lt;opcode></span>  <span class="comment">; takes 0 args, returns a newly allocated instance of type
+</span>
+(make-getter <span>&lt;getter-name-string></span> <span>&lt;type></span> <span>&lt;field-index></span>)
+ <span>=></span> <span>&lt;opcode></span>  <span class="comment">; takes 1 args, retrieves the field located at the index
+</span>
+(make-setter <span>&lt;setter-name-string></span> <span>&lt;type></span> <span>&lt;field-index></span>)
+ <span>=></span> <span>&lt;opcode></span>  <span class="comment">; takes 2 args, sets the field located at the index
+</span>
+(type-slot-offset <span>&lt;type></span> <span>&lt;field-name></span>)
+ <span>=></span> <span>&lt;index></span>   <span class="comment">; returns the index of the field with the given name
+</span></code></pre><p>
+</p><div><a name="h3_Unicode"></a><h3>Unicode</h3></div><p>
+</p><p>Chibi supports Unicode strings and I/O natively.  Case mappings and
+comparisons, character properties, formatting and regular expressions
+are all Unicode aware, supporting the latest version 13.0 of the
+Unicode standard.
+</p><p>Internally strings are encoded as UTF-8.  This provides easy
+interoperability with many C libraries, but means that
+<code><span>string-ref</span></code> and <code><span>string-set!</span></code> are O(n), so they should
+be avoided in performance-sensitive code (unless you compile Chibi
+with SEXP_USE_STRING_INDEX_TABLE).
+</p><p>In general you should use high-level APIs such as <code><span>string-map</span></code>
+to ensure fast string iteration.  String ports also provide a simple
+and portable way to efficiently iterate and construct strings, by
+looping over an input string or accumulating characters in an output
+string.
+</p><p>The <code><span>in-string</span></code> and <code><span>in-string-reverse</span></code> iterators in the
+<code>(chibi <span>loop</span>)</code> module will also iterate over strings
+efficiently while hiding the low-level details.
+</p><p>In the event that you do need a low-level interface, such as when
+writing your own iterator protocol, you should use string cursors.
+<code>(srfi <span>130</span>)</code> provides a portable API for this, or you can use
+<code>(chibi <span>string</span>)</code> which builds on the following core procedures:
+</p><ul><li><code>(string-cursor-start <span>str</span>)</code>
+<p>returns a start cursor for the string</p></li><li><code>(string-cursor-end <span>str</span>)</code>
+<p>returns a cursor one past the last valid cursor</p></li><li><code>(string-cursor-ref <span>str</span> <span>cursor</span>)</code>
+<p>get the char at the given cursor</p></li><li><code>(string-cursor-next <span>str</span> <span>cursor</span>)</code>
+<p>increment to the next cursor</p></li><li><code>(string-cursor-prev <span>str</span> <span>cursor</span>)</code>
+<p>decrement to the previous cursor</p></li><li><code>(substring-cursor <span>str</span> <span>cs1</span> [<span>cs2</span>])</code>
+<p>take a substring from the given cursors</p></li><li><code>(string-cursor&lt;? <span>cs1</span> <span>cs2</span>)</code>
+<p>cs1 is before cs2</p></li><li><code>(string-cursor&lt;=? <span>cs1</span> <span>cs2</span>)</code>
+<p>cs1 is before or the same as cs2</p></li><li><code>(string-cursor=? <span>cs1</span> <span>cs2</span>)</code>
+<p>cs1 is the same as cs2</p></li><li><code>(string-cursor>? <span>cs1</span> <span>cs2</span>)</code>
+<p>cs1 is after cs2</p></li><li><code>(string-cursor>=? <span>cs1</span> <span>cs2</span>)</code>
+<p>cs1 is the same or after cs2</p></li></ul><p>
+</p><div><a name="h2_EmbeddinginC"></a><h2>Embedding in C</h2></div><p>
+</p><div><a name="h3_QuickStart"></a><h3>Quick Start</h3></div><p>
+</p><p>To use Chibi-Scheme in a program you need to link against the
+"libchibi-scheme" library and include the "eval.h" header file:
+</p><p><code>#<span class="preprocessor">include</span> <span class="string">&lt;chibi/eval.h></span></code>
+</p><p>All definitions begin with a "sexp_" prefix, or "SEXP_" for constants
+(deliberately chosen not to conflict with other Scheme implementations
+which typically use "scm_").  In addition to the prototypes and
+utility macros, this includes the following type definitions:
+</p><ul><li><code>sexp</code> - an s-expression, used to represent all Scheme objects</li><li><code>sexp_uint_t</code> - an unsigned integer using as many bits as sexp</li><li><code>sexp_sint_t</code> - a signed integer using as many bits as sexp</li></ul><p>
+</p><p>A simple program might look like:
+</p><pre><code><span class="type">void </span><span class="function">dostuff</span>(<span class="type">sexp</span> ctx) {
+  <span class="comment">/* declare and preserve local variables *</span>
+  sexp_gc_var2(obj1, obj2);
+  sexp_gc_preserve2(ctx, obj1, obj2);
+
+  <span class="comment">/* load a file containing Scheme code *</span>
+  obj1 = sexp_c_string(ctx, <span class="string">"/path/to/source/file.scm"</span>, -1);
+  sexp_load(ctx, obj1, NULL);
+
+  <span class="comment">/* eval a C string as Scheme code *</span>
+  sexp_eval_string(ctx, <span class="string">"(some scheme expression)"</span>, -1, NULL);
+
+  <span class="comment">/* construct a Scheme expression to eval *</span>
+  obj1 = sexp_intern(ctx, <span class="string">"my-procedure"</span>, -1);
+  obj2 = sexp_cons(ctx, obj1, SEXP_NULL);
+  sexp_eval(ctx, obj2, NULL);
+
+  <span class="comment">/* release the local variables *</span>
+  sexp_gc_release2(ctx);
+}
+
+<span class="type">int </span><span class="function">main</span>(<span class="type">int</span> argc, <span class="type">char</span>** argv) {
+  <span class="type">sexp</span> ctx;
+  sexp_scheme_init();
+  ctx = sexp_make_eval_context(NULL, NULL, NULL, 0, 0);
+  sexp_load_standard_env(ctx, NULL, SEXP_SEVEN);
+  sexp_load_standard_ports(ctx, NULL, stdin, stdout, stderr, 1);
+  dostuff(ctx);
+  sexp_destroy_context(ctx);
+}
+</code></pre><p>
+</p><p>Looking at <code>main</code>, <code>sexp_make_eval_context</code> and
+<code>sexp_destroy_context</code> create and destroy a "context", which
+manages the heap and VM state.  The meaning of the arguments is
+explained in detail below, but these values will give reasonable
+defaults, in this case constructing an environment with the core
+syntactic forms, opcodes, and standard C primitives.
+</p><p>This is still a fairly bare environment, so we call
+<code>sexp_load_standard_env</code> to find and load the default
+initialization file.
+</p><p>The resulting context can then be used to construct objects, call
+functions, and most importantly evaluate code, as is done in
+<code>dostuff</code>.  The default garbage collector for Chibi is precise,
+which means we need to declare and preserve references to any
+temporary values we may generate, which is what the
+<code>sexp_gc_var2</code>, <code>sexp_gc_preserve2</code> and
+<code>sexp_gc_release2</code> macros do (there are similar macros for
+values 1-6).  Precise GCs prevent a class of memory leaks (and
+potential attackes based thereon), but if you prefer convenience then
+Chibi can be compiled with a conservative GC and you can ignore these.
+</p><p>The interesting part is then the calls to <code>sexp_load</code>,
+<code>eval_string</code> and <code>eval</code> which evaluate code stored in
+files, C strings, or represented as s-expressions respectively.
+</p><p>Destroying a context runs any finalizers for all objects in the heap
+and then frees the heap memory (but has no effect on other contexts
+you or other users of the library may have created).
+</p><div><a name="h3_ContextsandEvaluation"></a><h3>Contexts and Evaluation</h3></div><p>
+</p><p>Contexts represent the state needed to perform evaluation.  This includes
+keeping track of the heap (when using precise GC), a default environment,
+execution stack, and any global values.  A program being evaluated in one
+context may spawn multiple child contexts, such as when you call <code><span>eval</span></code>,
+and each child will share the same heap and globals.  When using multiple
+interpreter threads, each thread has its own context.
+</p><p>You can also create independent contexts with their own separate heaps.  These
+can run simultaneously in multiple OS threads without any need for
+synchronization.
+</p><ul><li><code><span class="type"></span><span class="function">sexp_make_context</span>(<span class="type">sexp</span> ctx, size_t size, size_t max_size)</code>
+<p>Creates a new context object.  The context has no associated environment, and
+so cannot be used for evaluation, but can be used to construct Scheme objects
+and call primitive C functions on them.
+
+If <code>ctx</code> is non-NULL it becomes the "parent" context.  The resulting
+context will share the same heap as its parent, and when using a precise GC
+preserve any variables preserved by the parent, but the parent will not
+preserve the child context by default.  Typically you either preserve the child
+manually or use it to perform a single sub-task then discard it and return to
+using only the parent.
+
+Otherwise, a new heap is allocated with <code>size</code> bytes, expandable to a
+maximum of <code>max_size</code> bytes, using the system defaults if either is 0.
+
+Note this context is not a malloced pointer (it resides inside a
+malloced heap), and therefore can't be passed to <code><span class="type"></span><span class="function">free</span>()</code>,
+or stored in a C++ smart pointer.  It can only be reclaimed with
+<code>sexp_destroy_context</code>.
+</p></li><li><code><span class="type"></span><span class="function">sexp_make_eval_context</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> stack, <span class="type">sexp</span> env, <span class="type">sexp_uint_t</span> size, <span class="type">sexp_uint_t</span> max_size)</code>
+<p>Similar to sexp_make_context, but also associates a stack, environment, and
+additional globals necessary to evaluate code.  Either or both of <code>stack</code>
+and <code>env</code> may be NULL, in which case defaults will be generated.  The
+default environment includes the compiled-in C primitives, as well as the 10
+core forms: <code><span>define</span></code>, <code><span>set!</span></code>, <code><span>lambda</span></code>, <code><span>if</span></code>,
+<code><span>begin</span></code>, <code><span>quote</span></code>, <code><span>syntax-quote</span></code>, <code><span>define-syntax</span></code>,
+<code><span>let-syntax</span></code>, and <code><span>letrec-syntax</span></code>.
+</p></li><li><code><span class="type"></span><span class="function">sexp_load_standard_env</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> env, <span class="type">sexp</span> version)</code>
+<p>Loads the standard parameters for <code>env</code>, constructs the feature list from
+pre-compiled defaults, and loads the installed initialization file for
+<code>version</code>, which should be the value <code>SEXP_SEVEN</code>.
+Also creates an <code><span>interaction-environment</span></code> parameter
+and sets <code>env</code> itself to that.
+</p></li><li><code><span class="type"></span><span class="function">sexp_load_standard_ports</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> env, FILE* in, FILE* out, FILE* err, <span class="type">int</span> leave_open)</code>
+<p>Creates <code><span>current-input-port</span></code>, <code><span>current-output-port</span></code>, and
+<code><span>current-error-port</span></code> parameters from <code>in</code>, <code>out</code> and
+<code>err</code>, and binds them in <code>env</code>.  If <code>env</code> is <cvar>NULL</cvar>
+the default context environment is used.  Any of the <code>FILE*</code> may
+be <cvar>NULL</cvar>, in which case the corresponding port is not set.  If
+<code>leave_open</code> is true, then the underlying <code>FILE*</code> is left
+open after the Scheme port is closed, otherwise they are both closed
+together.  If you want to reuse these streams from other vms, or from
+C, you should specify leave_open.
+</p></li><li><code><span class="type"></span><span class="function">sexp_load</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> file, <span class="type">sexp</span> env)</code>
+<p>Searches the installation path for the <code>file</code> and loads it in the
+environment <code>env</code>.  <code>file</code> may be a dynamic library or source code.
+</p></li><li><code><span class="type"></span><span class="function">sexp_eval</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> obj, <span class="type">sexp</span> env)</code>
+<p>Evaluates <code>obj</code> as a source form in the environment <code>env</code> and
+returns the result.
+</p></li><li><code><span class="type"></span><span class="function">sexp_eval_string</span>(<span class="type">sexp</span> ctx, <span class="type">const</span> <span class="type">char</span>* str, <span class="type">int</span> len, <span class="type">sexp</span> env)</code>
+<p>Reads a s-expression from the C string <code>str</code> (or the first <code>len</code> bytes
+if <code>len</code> is non-negative), evaluates the resulting form in the environment
+<code>env</code>, and returns the result.
+</p></li><li><code><span class="type"></span><span class="function">sexp_apply</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> proc, <span class="type">sexp</span> args)</code>
+<p>Applies the procedure <code>proc</code> to the arguments in the list <code>args</code> and
+returns the result.
+</p></li><li><code><span class="type"></span><span class="function">sexp_context_env</span>(<span class="type">sexp</span> ctx)</code>
+<p>Returns the current default environment associated with the context <code>ctx</code>.
+</p></li><li><code><span class="type"></span><span class="function">sexp_env_define</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> env, <span class="type">sexp</span> sym, <span class="type">sexp</span> val)</code>
+<p>Adds a new binding for <code>sym</code> in <code>env</code> with value <code>val</code>.
+</p></li><li><code><span class="type"></span><span class="function">sexp_env_ref</span>(<span class="type">sexp</span> env, <span class="type">sexp</span> sym, <span class="type">sexp</span> dflt)</code>
+<p>Returns the current binding of <code>sym</code> in <code>env</code>, or <code>dflt</code> if there
+is no binding.
+</p></li><li><code><span class="type"></span><span class="function">sexp_env_import</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> to, <span class="type">sexp</span> from, <span class="type">sexp</span> ls, <span class="type">sexp</span> immutp)</code>
+<p>Imports the bindings from environment <code>from</code> into environment <code>to</code>.  <code>ls</code> is the list of bindings to import - if it is <code>#f</code> then import all bindings.  If <code>immutp</code> is true the imported bindings are immutable and cannot be redefined.
+</p></li><li><code><span class="type"></span><span class="function">sexp_parameter_ref</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> param)</code>
+<p>Returns the current dynamic value of the parameter <code>param</code> in the
+given context.
+</p></li></ul><p>
+</p><div><a name="h3_GarbageCollection"></a><h3>Garbage Collection</h3></div><p>
+</p><p>Chibi uses a precise garbage collector by default, which means when performing
+multiple computations on the C side you must explicitly preserve any temporary
+values.  You can declare variables to be preserved with sexp_gc_var<i>n</i>,
+for n from 1 to 6.</p><div id="notes">You can declare additional macros for larger
+values of n if needed.</div><p>
+</p><p><code>sexp_gc_var<i>n</i>(obj<sub>1</sub>, obj<sub>2</sub>, ..., obj<sub>n</sub>)
+</code>
+</p><p>This is equivalent to the declaration
+</p><p><code>sexp obj<sub>1</sub>, obj<sub>2</sub>, ..., obj<sub>n</sub>;
+</code>
+</p><p>except it makes preservation possible.  Because it is a declaration it must
+occur at the beginning of your function, and because it includes assignments
+(in the macro-expanded form) it should occur after all other declarations.
+</p><p>To preserve these variables for a given context, you can then use
+sexp_gc_preserve<i>n</i>:
+</p><p><code>sexp_gc_preserve<i>n</i>(ctx, obj<sub>1</sub>, obj<sub>2</sub>, ..., obj<sub>n</sub>)
+</code>
+</p><p>This can be delayed in your code until you know a potentially memory-allocating
+computation will be performed, but once you call sexp_gc_preserve<i>n</i> it
+<em>must</em> be paired with a matching sexp_gc_release<i>n</i>:
+</p><p><code>sexp_gc_release<i>n</i>(ctx);
+</code>
+</p><p>Note each of these have different signatures. sexp_gc_var<i>n</i> just lists
+the variables to be declared.  sexp_gc_preserve<i>n</i> prefixes these with
+the context in which they are to be preserved, and sexp_gc_release<i>n</i>
+just needs the context.
+</p><p>A typical usage for these is:
+</p><pre><code><span class="type">sexp </span><span class="function">foo</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> bar, <span class="type">sexp</span> baz) {
+  <span class="comment">/* variable declarations *</span>
+  <span class="type">int</span> i, j;
+  ...
+  sexp_gc_var3(tmp1, tmp2, res);
+
+  <span class="comment">/* asserts or other shortcut returns *</span>
+  sexp_assert_type(ctx, sexp_barp, SEXP_BAR, bar);
+  sexp_assert_type(ctx, sexp_bazp, SEXP_BAZ, baz);
+
+  <span class="comment">/* preserve the variables in ctx *</span>
+  sexp_gc_preserve3(ctx, tmp1, tmp2, res);
+
+  <span class="comment">/* perform your computations *</span>
+  tmp1 = ...
+  tmp2 = ...
+  res = ...
+
+  <span class="comment">/* release before returning *</span>
+  sexp_gc_release3(ctx);
+
+  <span class="keyword">return</span> res;
+}
+</code></pre><p>
+</p><p>If compiled with the Boehm GC, sexp_gc_var<i>n</i> just translates to the
+plain declaration, while sexp_gc_preserve<i>n</i> and
+sexp_gc_release<i>n</i> become noops.
+</p><p>When interacting with a garbage collection system from another
+language, or communicating between different Chibi managed heaps, you
+may want to manually ensure objects are preserved irrespective of any
+references to it from other objects in the same heap.  This can be
+done with the <code>sexp_preserve_object</code> and
+<code>sexp_release_object</code> utilities.
+</p><p><code><span class="type"></span><span class="function">sexp_preserve_object</span>(ctx, obj)
+</code>
+</p><p>Increment the absolute reference count for <code>obj</code>.  So long as the
+reference count is above 0, <code>obj</code> will not be reclaimed even if
+there are no references to it from other object in the Chibi managed
+heap.
+</p><p><code><span class="type"></span><span class="function">sexp_release_object</span>(ctx, obj)
+</code>
+</p><p>Decrement the absolute reference count for <code>obj</code>.
+</p><div><a name="h3_CAPIIndex"></a><h3>C API Index</h3></div><p>
+</p><p>The above sections describe most everything you need for embedding in
+a typical application, notably creating environments and evaluating
+code from sexps, strings or files.  The following sections expand on
+additional macros and utilities for inspecting, accessing and creating
+different Scheme types, and for performing port and string I/O.  It is
+incomplete - see the macros and SEXP_API annotated functions in the
+include files (sexp.h, eval.h, bignum.h) for more bindings.
+</p><p>Being able to convert from C string to sexp, evaluate it, and convert
+the result back to a C string forms the basis of the C API.  Because
+Chibi is aimed primarily at minimal size, there are relatively few
+other utilities or helpers.  It is expected most high-level code will
+be written in Scheme, and most low-level code will be written in pure,
+Scheme-agnostic C and wrapped via the FFI.
+</p><div><a name="h4_TypePredicates"></a><h4>Type Predicates</h4></div><p>
+</p><p>The sexp represents different Scheme types with the use of tag bits for
+so-called "immediate" values, and a type tag for heap-allocated values.  The
+following predicates can be used to distinguish these types.  Note the
+predicates in C all end in "p".  For efficiency they are implemented as macros,
+and so may evaluate their arguments multiple times.
+</p><p>Note also that the non-immediate type checks will segfault if passed a
+NULL value.  At the Scheme level (and the return values of any
+exported primitives) NULLs are never exposed, however some unexposed
+values in C can in certain cases be NULL.  If you're not sure you'll
+need to check manually before applying the predicate.
+</p><ul><li><code><span class="type"></span><span class="function">sexp_booleanp</span>(obj)</code> - <code>obj</code> is <code>#t</code> or <code>#f</code></li><li><code><span class="type"></span><span class="function">sexp_fixnump</span>(obj)</code> - <code>obj</code> is an immediate integer</li><li><code><span class="type"></span><span class="function">sexp_flonump</span>(obj)</code> - <code>obj</code> is an inexact real</li><li><code><span class="type"></span><span class="function">sexp_bignump</span>(obj)</code> - <code>obj</code> is a heap-allocated integer</li><li><code><span class="type"></span><span class="function">sexp_integerp</span>(obj)</code> - <code>obj</code> is an integer</li><li><code><span class="type"></span><span class="function">sexp_numberp</span>(obj)</code> - <code>obj</code> is any kind of number</li><li><code><span class="type"></span><span class="function">sexp_charp</span>(obj)</code> - <code>obj</code> is a character</li><li><code><span class="type"></span><span class="function">sexp_stringp</span>(obj)</code> - <code>obj</code> is a string</li><li><code><span class="type"></span><span class="function">sexp_string_cursorp</span>(obj)</code> - <code>obj</code> is a string cursor</li><li><code><span class="type"></span><span class="function">sexp_bytesp</span>(obj)</code> - <code>obj</code> is a bytevector</li><li><code><span class="type"></span><span class="function">sexp_symbolp</span>(obj)</code> - <code>obj</code> is a symbol</li><li><code><span class="type"></span><span class="function">sexp_idp</span>(obj)</code> - <code>obj</code> is a symbol or hygienic identifier</li><li><code><span class="type"></span><span class="function">sexp_nullp</span>(obj)</code> - <code>obj</code> is the null value</li><li><code><span class="type"></span><span class="function">sexp_pairp</span>(obj)</code> - <code>obj</code> is a pair</li><li><code><span class="type"></span><span class="function">sexp_vectorp</span>(obj)</code> - <code>obj</code> is a vector</li><li><code><span class="type"></span><span class="function">sexp_iportp</span>(obj)</code> - <code>obj</code> is an input port</li><li><code><span class="type"></span><span class="function">sexp_oportp</span>(obj)</code> - <code>obj</code> is an output port</li><li><code><span class="type"></span><span class="function">sexp_portp</span>(obj)</code> - <code>obj</code> is any kind of port</li><li><code><span class="type"></span><span class="function">sexp_procedurep</span>(obj)</code> - <code>obj</code> is a procedure</li><li><code><span class="type"></span><span class="function">sexp_opcodep</span>(obj)</code> - <code>obj</code> is a primitive opcode</li><li><code><span class="type"></span><span class="function">sexp_applicablep</span>(obj)</code> - <code>obj</code> is valid as the first arg to apply</li><li><code><span class="type"></span><span class="function">sexp_typep</span>(obj)</code> - <code>obj</code> is a type</li><li><code><span class="type"></span><span class="function">sexp_exceptionp</span>(obj)</code> - <code>obj</code> is an exception</li><li><code><span class="type"></span><span class="function">sexp_contextp</span>(obj)</code> - <code>obj</code> is a context</li><li><code><span class="type"></span><span class="function">sexp_envp</span>(obj)</code> - <code>obj</code> is an environment</li><li><code><span class="type"></span><span class="function">sexp_corep</span>(obj)</code> - <code>obj</code> is a special form</li><li><code><span class="type"></span><span class="function">sexp_macrop</span>(obj)</code> - <code>obj</code> is a macro</li><li><code><span class="type"></span><span class="function">sexp_synclop</span>(obj)</code> - <code>obj</code> is a syntactic closure</li><li><code><span class="type"></span><span class="function">sexp_bytecodep</span>(obj)</code> - <code>obj</code> is compiled bytecode</li><li><code><span class="type"></span><span class="function">sexp_cpointerp</span>(obj)</code> - <code>obj</code> is an opaque C pointer</li></ul><p>
+</p><div><a name="h4_Constants"></a><h4>Constants</h4></div><p>
+</p><p>The following shortcuts for various immediate values are available.
+</p><ul><li><code>SEXP_FALSE</code> - the false boolean</li><li><code>SEXP_TRUE</code> - the true boolean</li><li><code>SEXP_NULL</code> - the empty list</li><li><code>SEXP_EOF</code> - the end-of-file object</li><li><code>SEXP_VOID</code> - an undefined value often returned by mutators</li><li><code>SEXP_ZERO</code> - shortcut for sexp_make_fixnum(0)</li><li><code>SEXP_ONE</code> - shortcut for sexp_make_fixnum(1)</li><li>...</li><li><code>SEXP_TEN</code> - shortcut for sexp_make_fixnum(10)</li><li><code>SEXP_NEG_ONE</code> - shortcut for sexp_make_fixnum(-1)</li></ul><p>
+</p><div><a name="h4_StringHandling"></a><h4>String Handling</h4></div><p>
+</p><p>Scheme strings are length bounded C strings which can be accessed with
+the following macros:
+</p><ul><li><code>char* sexp_string_data(<span class="type">sexp</span> s)</code> - the raw bytes of the string</li><li><code><span class="type">sexp_uint_t </span><span class="function">sexp_string_size</span>(<span class="type">sexp</span> s)</code> - the number of raw bytes in the string</li><li><code><span class="type">sexp_uint_t </span><span class="function">sexp_string_length</span>(<span class="type">sexp</span> s)</code> - the number of characters encoded in <code>s</code></li></ul><p>
+</p><p>Currently all Scheme strings also happen to be NULL-terminated, but
+you should not rely on this and be sure to use the size as a bounds
+check.  The runtime does not prevent embedded NULLs inside strings,
+however data after the NULL may be ignored.
+</p><p>By default (unless you compile with -DSEXP_USE_UTF8_STRING=0), strings
+are interpreted as UTF-8 encoded on the Scheme side, as describe in
+section Unicode above.  In many cases you can ignore this on the C
+side and just treat the string as an opaque sequence of bytes.
+However, if you need to you can use the following macros to safely
+access the contents of the string regardless of the options Chibi was
+compiled with:
+</p><ul><li><code><span class="type">sexp </span><span class="function">sexp_string_ref</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> s, <span class="type">sexp</span> i)</code> - returns the character at index i</li><li><code><span class="type">sexp </span><span class="function">sexp_string_set</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> s, <span class="type">sexp</span> i, <span class="type">sexp</span> ch)</code> - sets the character at index i</li><li><code><span class="type">sexp </span><span class="function">sexp_string_cursor_ref</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> s, <span class="type">sexp</span> i)</code> - returns the character at raw offset i (a fixnum)</li><li><code><span class="type">sexp </span><span class="function">sexp_string_cursor_set</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> s, <span class="type">sexp</span> i, <span class="type">sexp</span> ch)</code> - sets the character at raw offset i (a fixnum)</li><li><code><span class="type">sexp </span><span class="function">sexp_string_cursor_next</span>(<span class="type">sexp</span> s, <span class="type">sexp</span> i)</code> - returns the next cursor after raw offset <code>i</code></li><li><code><span class="type">sexp </span><span class="function">sexp_string_cursor_prev</span>(<span class="type">sexp</span> s, <span class="type">sexp</span> i)</code> - returns the previous cursor before raw offset <code>i</code></li><li><code><span class="type">sexp </span><span class="function">sexp_substring</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> s, <span class="type">sexp</span> i, <span class="type">sexp</span> j)</code> - returns the substring between indices <code>i</code> and <code>j</code></li><li><code><span class="type">sexp </span><span class="function">sexp_substring_cursor</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> s, <span class="type">sexp</span> i, <span class="type">sexp</span> j)</code> - returns the substring between raw offsets <code>i</code> and <code>j</code></li></ul><p>
+</p><p>When UTF-8 support is not compiled in the cursor and non-cursor
+variants are equivalent.
+</p><div><a name="h4_Accessors"></a><h4>Accessors</h4></div><p>
+</p><p>The following macros provide access to the different components of the
+Scheme types.  They do no type checking, essentially translating
+directly to pointer offsets, so you should be sure to use the above
+predicates to check types first.  They only evaluate their arguments
+once.
+</p><ul><li><code><span class="type"></span><span class="function">sexp_make_boolean</span>(n)</code> - <code>#f</code> if <code>n</code> is 0, <code>#t</code> otherwise</li><li><code><span class="type"></span><span class="function">sexp_unbox_boolean</span>(obj)</code> - 1 if <code>obj</code> is <code>#t</code>, 0 otherwise</li><li><code><span class="type"></span><span class="function">sexp_make_fixnum</span>(n)</code> - creates a new fixnum representing int <code>n</code></li><li><code><span class="type"></span><span class="function">sexp_unbox_fixnum</span>(obj)</code> - converts a fixnum to a C integer</li><li><code><span class="type"></span><span class="function">sexp_make_character</span>(ch)</code> - creates a new character representing char <code>ch</code></li><li><code><span class="type"></span><span class="function">sexp_unbox_character</span>(obj)</code> - converts a character to a C char</li><li><code><span class="type">sexp </span><span class="function">sexp_make_string_cursor</span>(<span class="type">int</span> offset)</code> - creates a string cursor for the given byte offset</li><li><code><span class="type">int </span><span class="function">sexp_unbox_string_cursor</span>(<span class="type">sexp</span> sc)</code> - returns the offset for the given string cursor</li><li><code><span class="type"></span><span class="function">sexp_car</span>(pair)</code> - the car of <code>pair</code></li><li><code><span class="type"></span><span class="function">sexp_cdr</span>(pair)</code> - the cdr of <code>pair</code></li><li><code><span class="type"></span><span class="function">sexp_ratio_numerator</span>(q)</code> - the numerator of the ratio <code>q</code></li><li><code><span class="type"></span><span class="function">sexp_ratio_denominator</span>(q)</code> - the denominator of the ratio <code>q</code></li><li><code><span class="type"></span><span class="function">sexp_complex_real</span>(z)</code> - the real part of the complex <code>z</code></li><li><code><span class="type"></span><span class="function">sexp_complex_imag</span>(z)</code> - the imaginary part of the complex <code>z</code></li><li><code><span class="type"></span><span class="function">sexp_string_length</span>(str)</code> - the byte length of <code>str</code> as an int</li><li><code><span class="type"></span><span class="function">sexp_string_ref</span>(str, i)</code> - the <code>i</code>'th byte of string <code>str</code></li><li><code><span class="type"></span><span class="function">sexp_string_set</span>(str, i, ch)</code> - set the <code>i</code>'th byte of string <code>str</code></li><li><code><span class="type"></span><span class="function">sexp_bytes_length</span>(bv)</code> - the length of <code>bv</code> as an int</li><li><code><span class="type"></span><span class="function">sexp_bytes_data</span>(bv)</code> - the raw char* data of <code>bv</code></li><li><code><span class="type"></span><span class="function">sexp_vector_length</span>(vec)</code> - the length of <code>vec</code> as an int</li><li><code><span class="type"></span><span class="function">sexp_vector_ref</span>(vec, i)</code> - the <code>i</code>'th object of vector <code>vec</code></li><li><code><span class="type"></span><span class="function">sexp_vector_set</span>(vec, i, obj)</code> - set the <code>i</code>'th object of vector <code>vec</code></li><li><code><span class="type"></span><span class="function">sexp_bytes_length</span>(bv)</code> - the number of bytes in bytevector <code>bv</code></li><li><code><span class="type"></span><span class="function">sexp_bytes_ref</span>(bv, i)</code> - the <code>i</code>'th byte of bytevector <code>bv</code></li><li><code><span class="type"></span><span class="function">sexp_bytes_set</span>(bv, i, k)</code> - set the <code>i</code>'th byte of bytevector <code>bv</code></li></ul><p>
+</p><div><a name="h4_Constructors"></a><h4>Constructors</h4></div><p>
+</p><p>Constructors allocate memory and so must be passed a context argument.
+Any of these may fail and return the OOM exception object.
+</p><ul><li><code><span class="type"></span><span class="function">sexp_cons</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> obj1, <span class="type">sexp</span> obj2)</code> - create a new pair whose car is <code>obj1</code> and whose cdr is <code>obj2</code></li><li><code><span class="type"></span><span class="function">sexp_list1</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> obj)</code> - alias for sexp_cons(ctx, obj, SEXP_NULL)</li><li><code><span class="type"></span><span class="function">sexp_list2</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> obj1, <span class="type">sexp</span> obj2)</code> - create a list of two elements</li><li><code><span class="type"></span><span class="function">sexp_make_string</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> len, <span class="type">sexp</span> ch)</code> - create a new Scheme string of <code>len</code> characters, all initialized to <code>ch</code></li><li><code><span class="type"></span><span class="function">sexp_c_string</span>(<span class="type">sexp</span> ctx, <span class="type">const</span> <span class="type">char</span>* str, <span class="type">int</span> len)</code> - create a new Scheme string copying the first <code>len</code> characters of the C string <code>str</code>.  If <code>len</code> is -1, uses strlen(<code>str</code>).</li><li><code><span class="type"></span><span class="function">sexp_intern</span>(<span class="type">sexp</span> ctx, <span class="type">const</span> <span class="type">char</span>* str, <span class="type">int</span> len)</code> - interns a symbol from the first <code>len</code> characters of the C string <code>str</code>.  If <code>len</code> is -1, uses strlen(<code>str</code>).</li><li><code><span class="type"></span><span class="function">sexp_make_bytes</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> len, <span class="type">sexp</span> i)</code> - create a new Scheme bytevector of <code>len</code> bytes, all initialized to <code>i</code></li><li><code><span class="type"></span><span class="function">sexp_make_vector</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> len, <span class="type">sexp</span> obj)</code> - create a new vector of <code>len</code> elements, all initialized to <code>obj</code></li><li><code><span class="type"></span><span class="function">sexp_make_integer</span>(<span class="type">sexp</span> ctx, <span class="type">sexp_sint_t</span> n)</code> - create an integer, heap allocating as a bignum if needed</li><li><code><span class="type"></span><span class="function">sexp_make_unsigned_integer</span>(<span class="type">sexp</span> ctx, <span class="type">sexp_uint_t</span> n)</code> - create an unsigned integer, heap allocating as a bignum if needed</li></ul><p>
+</p><div><a name="h4_I/O"></a><h4>I/O</h4></div><p>
+</p><ul><li><code><span class="type"></span><span class="function">sexp_read</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> in)</code> - read a single datum from port <code>in</code></li><li><code><span class="type"></span><span class="function">sexp_write</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> obj, <span class="type">sexp</span> out)</code> - write <code>obj</code> to port <code>out</code></li><li><code><span class="type"></span><span class="function">sexp_write_string</span>(<span class="type">sexp</span> ctx, <span class="type">char</span>* str, <span class="type">sexp</span> out)</code> - write the characters in <code>str</code> to port <code>out</code></li><li><code><span class="type"></span><span class="function">sexp_newline</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> out)</code> - write a newline to port <code>out</code></li><li><code><span class="type"></span><span class="function">sexp_print_exception</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> exn, <span class="type">sexp</span> out)</code> - print an error message for <code>exn</code> to port <code>out</code></li><li><code><span class="type"></span><span class="function">sexp_current_input_port</span>(<span class="type">sexp</span> ctx)</code> - the <code><span>current-input-port</span></code></li><li><code><span class="type"></span><span class="function">sexp_current_output_port</span>(<span class="type">sexp</span> ctx)</code> - the <code><span>current-output-port</span></code></li><li><code><span class="type"></span><span class="function">sexp_current_error_port</span>(<span class="type">sexp</span> ctx)</code> - the <code><span>current-error-port</span></code></li><li><code><span class="type"></span><span class="function">sexp_debug</span>(<span class="type">sexp</span> ctx, <span class="type">char</span>* msg, <span class="type">sexp</span> obj)</code> - write <code>obj</code> with a debug message prefix to <code><span>current-error-port</span></code></li><li><code><span class="type"></span><span class="function">sexp_read_from_string</span>(<span class="type">sexp</span> ctx, <span class="type">char</span>* str, <span class="type">int</span> len)</code> - read a single datum from <code>str</code>, using at most <code>len</code> bytes if <code>len</code> is non-negative</li><li><code><span class="type"></span><span class="function">sexp_write_to_string</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> obj)</code> - return a Scheme string representation of <code>obj</code></li><li><code><span class="type"></span><span class="function">sexp_open_input_string</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> str)</code> - equivalent to <code><span>open-input-string</span></code></li><li><code><span class="type"></span><span class="function">sexp_open_output_string</span>(<span class="type">sexp</span> ctx)</code> - equivalent to <code><span>open-output-string</span></code></li><li><code><span class="type"></span><span class="function">sexp_get_output_string</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> port)</code> - equivalent to <code><span>get-output-string</span></code></li></ul><p>
+</p><div><a name="h4_Utilities"></a><h4>Utilities</h4></div><p>
+</p><ul><li><code><span class="type"></span><span class="function">sexp_equalp</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> x, <span class="type">sexp</span> y)</code> - <code><span>equal?</span></code></li><li><code><span class="type"></span><span class="function">sexp_length</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> ls)</code> - <code><span>length</span></code></li><li><code><span class="type"></span><span class="function">sexp_listp</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> x)</code> - <code><span>list?</span></code></li><li><code><span class="type"></span><span class="function">sexp_memq</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> x, <span class="type">sexp</span> ls)</code> - <code><span>memq</span></code></li><li><code><span class="type"></span><span class="function">sexp_assq</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> x, <span class="type">sexp</span> ls)</code> - <code><span>assq</span></code></li><li><code><span class="type"></span><span class="function">sexp_reverse</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> ls)</code> - <code><span>reverse</span></code></li><li><code><span class="type"></span><span class="function">sexp_nreverse</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> ls)</code> - <code><span>reverse!</span></code></li><li><code><span class="type"></span><span class="function">sexp_append2</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> ls)</code> - <code><span>append</span></code> for two arguments</li><li><code><span class="type"></span><span class="function">sexp_copy_list</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> ls)</code> - return a shallow copy of <code>ls</code></li><li><code><span class="type"></span><span class="function">sexp_list_to_vector</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> ls)</code> - <code><span>list->vector</span></code></li><li><code><span class="type"></span><span class="function">sexp_symbol_to_string</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> sym)</code> - <code><span>symbol->string</span></code></li><li><code><span class="type"></span><span class="function">sexp_string_to_symbol</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> str)</code> - <code><span>string->symbol</span></code></li><li><code><span class="type"></span><span class="function">sexp_string_to_number</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> str)</code> - <code><span>string->number</span></code></li></ul><p>
+</p><div><a name="h3_Exceptions"></a><h3>Exceptions</h3></div><p>
+</p><p>Exceptions can be created with the following:
+</p><ul><li><code><span class="type">sexp </span><span class="function">sexp_make_exception</span> (<span class="type">sexp</span> ctx, <span class="type">sexp</span> kind, <span class="type">sexp</span> message, <span class="type">sexp</span> irritants, <span class="type">sexp</span> procedure, <span class="type">sexp</span> source)</code>
+<p>Create an exception of the given <code>kind</code> (a symbol), with the
+string <code>message</code>, and <code>irritants</code> list.  <code>procedure</code> and
+<code>source</code> provide information about the error location.  From a C
+function, <code>procedure</code> should generally be <code>self</code>.</p></li><li><code><span class="type">sexp </span><span class="function">sexp_user_exception</span> (<span class="type">sexp</span> ctx, <span class="type">sexp</span> self, <span class="type">const</span> <span class="type">char</span> *msg, <span class="type">sexp</span> x)</code>
+<p>Shortcut for an exception of kind <code>user</code>, with the given message and single irritant.</p></li><li><code><span class="type">sexp </span><span class="function">sexp_type_exception</span> (<span class="type">sexp</span> ctx, <span class="type">sexp</span> self, <span class="type">sexp_uint_t</span> type_id, <span class="type">sexp</span> x)</code>
+<p>Shortcut for an exception of kind <code>type</code>, where <code>x</code> was
+expected to be of type <code>type_id</code> but wasn't.</p></li><li><code><span class="type">sexp </span><span class="function">sexp_xtype_exception</span> (<span class="type">sexp</span> ctx, <span class="type">sexp</span> self, <span class="type">const</span> <span class="type">char</span> *msg, <span class="type">sexp</span> x)</code>
+<p>Shortcut for an exception of kind <code>type</code>, for more general
+domain errors, where <code>x</code> failed to meet the restrictions in <code>msg</code>.</p></li></ul><p>
+</p><p>Returning an exception from a C function by default <em>raises</em> that
+exception in the VM.  If you want to pass an exception as a first
+class value, you have to wrap it first:
+</p><p><code><span class="type">sexp </span><span class="function">sexp_maybe_wrap_error</span> (<span class="type">sexp</span> ctx, <span class="type">sexp</span> obj)</code>
+</p><div><a name="h3_Customizing"></a><h3>Customizing</h3></div><p>
+</p><p>You can add your own types and primitives with the following functions.
+</p><ul><li><code><span class="type">sexp </span><span class="function">sexp_define_foreign</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> env, <span class="type">const</span> <span class="type">char</span>* name, <span class="type">int</span> num_args, sexp_proc1 func)</code>
+<p>Defines a new primitive procedure with the name <code>name</code> in the
+environment <code>env</code>.  The procedure takes <code>num_args</code> arguments
+and passes them to the C function <code>func</code>.  The C function must
+take the standard calling convention:
+
+<code><span class="type">sexp </span><span class="function">func</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> self, <span class="type">sexp</span> n, <span class="type">sexp</span> arg<sub>1</sub>, ..., <span class="type">sexp</span> arg<sub>num_args</sub>)</code>
+
+where <code>ctx</code> is the current context, <code>self</code> is the procedure
+itself, and <code>n</code> is the number of arguments passed.
+
+<code>func</code> is responsible for checking its own argument types.
+</p></li><li><code><span class="type">sexp </span><span class="function">sexp_define_foreign_opt</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> env, <span class="type">const</span> <span class="type">char</span>* name, <span class="type">int</span> num_args, sexp_proc1 func, <span class="type">sexp</span> dflt)</code>
+<p>Equivalent to <code>sexp_define_foreign</code>, except the final argument is
+optional and defaults to the value <code>dflt</code>.
+</p></li><li><code><span class="type">sexp </span><span class="function">sexp_define_foreign_param</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> env, <span class="type">const</span> <span class="type">char</span>* name, <span class="type">int</span> num_args, sexp_proc1 func, <span class="type">const</span> <span class="type">char</span>* param)</code>
+<p>Equivalent to <code>sexp_define_foreign_opt</code>, except instead of a fixed
+default argument <code>param</code> should be the name of a parameter bound in
+<code>env</code>.
+</p></li><li><code><span class="type">sexp </span><span class="function">sexp_register_simple_type</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> name, <span class="type">sexp</span> parent, <span class="type">sexp</span> slots)</code>
+<p>Defines a new simple record type having <code>slots</code> new slots in addition
+to any inherited from the parent type <code>parent</code>.  If <code>parent</code> is false,
+inherits from the default <code>object</code> record type.
+</p></li><li><code><span class="type">sexp </span><span class="function">sexp_register_c_type</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> name, <span class="type">sexp</span> finalizer)</code>
+<p>Shortcut to defines a new type as a wrapper around a C pointer.
+Returns the type object, which can be used with sexp_make_cpointer to
+wrap instances of the type.  The finalizer may be sexp_finalize_c_type
+in which case managed pointers are freed as if allocated with malloc,
+NULL in which case the pointers are never freed, or otherwise a
+procedure of one argument which should release any resources.
+</p></li><li><code><span class="type">sexp </span><span class="function">sexp_make_cpointer</span>(<span class="type">sexp</span> ctx, <span class="type">sexp_uint_t</span> type_tag, <span class="type">void</span>* value, <span class="type">sexp</span> parent, <span class="type">int</span> freep)</code>
+<p>Creates a new instance of the type indicated by type_tag wrapping
+value. If parent is provided, references to the child will also
+preserve the parent, important e.g. to preserve an enclosing struct
+when wrapped references to nested structs are still in use.  If freep
+is true, then when reclaimed by the GC the finalizer for this type,
+if any, will be called on the instance.
+
+You can retrieve the tag from a type object with sexp_type_tag(type).
+</p></li><li><code><span class="type">sexp </span><span class="function">sexp_lookup_type</span>(<span class="type">sexp</span> ctx, <span class="type">sexp</span> name, <span class="type">sexp</span> tag_or_id)</code>
+<p>Returns the type whose name matches the string <code>name</code>.  If
+<code>tag_or_id</code> is an integer, it is taken as the tag and requires the
+numeric type tag (as from sexp_type_tag) to also match.
+</p>
+<p>If <code>tag_or_id</code> is a string, it is taken as the unique id of the
+type, and must match sexp_type_id(type).  However, currently
+sexp_type_id(type) is never set.
+</p></li></ul><p>
+</p><p>See the C FFI for an easy way to automate adding bindings for C
+functions.
+</p><div><a name="h2_CFFI"></a><h2>C FFI</h2></div><p>
+</p><p>The "chibi-ffi" script reads in the C function FFI definitions from an
+input file and outputs the appropriate C wrappers into a file with the
+same base name and the ".c" extension.  You can then compile that C
+file into a shared library:
+</p><pre class="command"><code>chibi-ffi file.stub
+cc -fPIC -shared file.c -lchibi-scheme
+</code></pre><p>
+</p><p>(or using whatever flags are appropriate to generate shared libs on
+your platform) and the generated .so file can be loaded directly with
+<code><span>load</span></code>, or portably using <code>(<span class="keyword">include-shared</span> <span class="string">"file"</span>)</code> in a
+module definition (note that include-shared uses no suffix).
+</p><p>The goal of this interface is to make access to C types and functions
+easy, without requiring the user to write any C code.  That means the
+stubber needs to be intelligent about various C calling conventions
+and idioms, such as return values passed in actual parameters.
+Writing C by hand is still possible, and several of the core modules
+provide C interfaces directly without using the stubber.
+</p><div><a name="h3_IncludesandInitializations"></a><h3>Includes and Initializations</h3></div><p>
+</p><ul><li><code>(c-include <span>header</span>)</code> - includes the file <code>header</code></li><li><code>(c-system-include <span>header</span>)</code> - includes the system file <code>header</code></li><li><code>(c-declare <span>args</span> <span>...</span>)</code> - outputs <code>args</code> directly in the top-level C source</li><li><code>(c-init <span>args</span> <span>...</span>)</code> - evaluates <code>args</code> as C code after all other library initializations have been performed, with <cvar>ctx</cvar> and <cvar>env</cvar> in scope</li></ul><p>
+</p><div><a name="h3_StructInterface"></a><h3>Struct Interface</h3></div><p>
+</p><p>C structs can be bound as Scheme types with the
+<code><span>define-c-struct</span></code> form:
+</p><pre><code>(define-c-struct <span>struct_name</span>
+  [<span>predicate:</span> <span>predicate-name</span>]
+  [<span>constructor:</span> <span>constructor-name</span>]
+  [<span>finalizer:</span> <span>c_finalizer_name</span>]
+  (type <span>c_field_name</span> <span>getter-name</span> <span>setter-name</span>) <span>...</span>)
+</code></pre><p>
+</p><p><code>struct_name</code> should be the name of a C struct type.  If provided,
+<code>predicate-name</code> is bound to a procedure which takes one object
+and returns <code>#t</code> iff the object is of type <code>struct_name</code>.
+</p><p>If provided, <code>constructor-name</code> is bound to a procedure of zero
+arguments which creates and returns a newly allocated instance of the
+type.
+</p><p>If a finalizer is provided, <code>c_finalizer_name</code> must be a C
+function which takes one argument, a pointer to the struct, and
+performs any cleanup or freeing of resources necessary.
+</p><p>The remaining slots are similar to the
+<a href="http://srfi.schemers.org/srfi-9/srfi-9.html">SRFI-9</a> syntax,
+except they are prefixed with a C type (described below).  The
+<code>c_field_name</code> should be a field name of <code>struct_name</code>.
+<code>getter-name</code> will then be bound to a procedure of one argument, a
+struct_name type, which returns the given field.  If provided,
+<code>setter-name</code> will be bound to a procedure of two arguments to
+mutate the given field.
+</p><p>The variants <code><span>define-c-class</span></code> and <code><span>define-c-union</span></code> take
+the same syntax but define types with the <code>class</code> and
+<code>union</code> keywords respectively.  <code><span>define-c-type</span></code> just
+defines accessors to an opaque type without any specific struct-like
+keyword.
+</p><pre><code><span class="comment">;; Example: the struct addrinfo returned by getaddrinfo.
+</span>
+(c-system-include <span class="string">"netdb.h"</span>)
+
+(define-c-struct <span>addrinfo</span>
+  <span>finalizer:</span> <span>freeaddrinfo</span>
+  <span>predicate:</span> <span>address-info?</span>
+  (int              <span>ai_family</span>    <span>address-info-family</span>)
+  (int              <span>ai_socktype</span>  <span>address-info-socket-type</span>)
+  (int              <span>ai_protocol</span>  <span>address-info-protocol</span>)
+  ((link <span>sockaddr</span>)  <span>ai_addr</span>      <span>address-info-address</span>)
+  (size_t           <span>ai_addrlen</span>   <span>address-info-address-length</span>)
+  ((link <span>addrinfo</span>)  <span>ai_next</span>      <span>address-info-next</span>))
+</code></pre><p>
+</p><div><a name="h3_FunctionandConstantInterface"></a><h3>Function and Constant Interface</h3></div><p>
+</p><p>C functions are defined with:
+</p><p><code>(define-c <span>return-type</span> <span>name-spec</span> (arg-type <span>...</span>))</code>
+</p><p>where <code>name-space</code> is either a symbol name, or a list of
+<code>(scheme-name <span>c_name</span>)</code>.  If just a symbol is used, the C name
+is generated automatically by replacing any dashes (-) in the Scheme
+name with underscores (_).
+</p><p>Each <code>arg-type</code> is a type suitable for input validation and
+conversion as discussed below.
+</p><pre><code><span class="comment">;; Example: define connect(2) in Scheme
+</span>(define-c <span>int</span> <span>connect</span> (int <span>sockaddr</span> <span>int</span>))
+</code></pre><p>
+</p><p>Constants can be defined with:
+</p><p><code>(define-c-const <span>type</span> <span>name-space</span>)</code>
+</p><p>where <code>name-space</code> is the same form as in <code><span>define-c</span></code>.  This
+defines a Scheme variable with the same value as the C constant.
+</p><pre><code><span class="comment">;; Example: define address family constants in Scheme
+</span>(define-c-const <span>int</span> (address-family/unix <span class="string">"AF_UNIX"</span>))
+(define-c-const <span>int</span> (address-family/inet <span class="string">"AF_INET"</span>))
+</code></pre><p>
+</p><div><a name="h3_CTypes"></a><h3>C Types</h3></div><p>
+</p><div><a name="h4_BasicTypes"></a><h4>Basic Types</h4></div><p>
+</p><ul><li><code>void</code></li><li><code>boolean</code></li><li><code>char</code></li><li><code>sexp</code> (no conversions)</li></ul><p>
+</p><div><a name="h4_IntegerTypes"></a><h4>Integer Types</h4></div><p>
+</p><ul><li><code>signed-char</code></li><li><code>short</code></li><li><code>int</code></li><li><code>long</code></li><li><code>unsigned-char</code></li><li><code>unsigned-short</code></li><li><code>unsigned-int</code></li><li><code>unsigned-long</code></li><li><code>size_t</code></li><li><code>pid_t</code></li><li><code>uid_t</code></li><li><code>gid_t</code></li><li><code>time_t</code> (in seconds, but using the chibi epoch of 2010/01/01)</li><li><code>errno</code> (as a return type returns <code>#f</code> on error)</li></ul><p>
+</p><div><a name="h4_FloatTypes"></a><h4>Float Types</h4></div><p>
+</p><ul><li><code>float</code></li><li><code>double</code></li><li><code>long-double</code></li></ul><p>
+</p><div><a name="h4_StringTypes"></a><h4>String Types</h4></div><p>
+</p><ul><li><code>string</code> - a null-terminated char*</li><li><code>env-string</code> - a <code>VAR=VALUE</code> string represented as a <code>(VAR <span>.</span> <span>VALUE</span>)</code> pair in Scheme</li><li><code>(array <span>char</span>)</code> is equivalent to <code>string</code></li></ul><p>
+</p><div><a name="h4_PortTypes"></a><h4>Port Types</h4></div><p>
+</p><ul><li><code>input-port</code></li><li><code>output-port</code></li></ul><p>
+</p><div><a name="h4_StructTypes"></a><h4>Struct Types</h4></div><p>
+</p><p>Struct types are by default just referred to by the bare
+<code>struct_name</code> from <code><span>define-c-struct</span></code>, and it is assumed you
+want a pointer to that type.  To refer to the full struct, use the
+struct modifier, as in <code>(struct <span>struct-name</span>)</code>.
+</p><div><a name="h4_Typemodifiers"></a><h4>Type modifiers</h4></div><p>
+</p><p>Any type may also be written as a list of modifiers followed by the
+type itself.  The supported modifiers are:
+</p><ul><li><code>const</code>
+<p>Prepends the "const" C type modifier.
+As a return or result parameter, makes non-immediates immutable.</p></li><li><code>free</code>
+<p>It's Scheme's responsibility to "free" this resource.
+As a return or result parameter, registers the freep flag
+this causes the type finalizer to be run when GCed.</p></li><li><code>maybe-null</code>
+<p>This pointer type may be NULL.
+As a result parameter, NULL is translated to #f
+normally this would just return a wrapped NULL pointer.
+As an input parameter, #f is translated to NULL
+normally this would be a type error.</p></li><li><code>pointer</code>
+<p>Create a pointer to this type.
+As a return parameter, wraps the result in a vanilla cpointer.
+As a result parameter, boxes then unboxes the value.</p></li><li><code>reference</code>
+<p>A stack-allocated pointer to this type.
+As a result parameter, passes a stack-allocated pointer to
+the value, then returns the dereferenced pointer.</p></li><li><code>struct</code>
+<p>Treat this struct type as a struct, not a pointer.
+As an input parameter, dereferences the pointer.
+As a type field, indicates a nested struct.</p></li><li><code>link</code>
+<p>Add a gc link.
+As a field getter, link to the parent object, so the
+parent won't be GCed so long as we have a reference
+to the child.  This behavior is automatic for nested structs.</p></li><li><code>result</code>
+<p>Return a result in this parameter.
+If there are multiple results (including the return type),
+they are all returned in a list.
+If there are any result parameters, a return type
+of errno returns #f on failure, and as eliminated
+from the list of results otherwise.</p></li><li><code>(value <span>&lt;expr></span>)</code>
+<p>Specify a fixed value.
+As an input parameter, this parameter is not provided
+in the Scheme API but always passed as &lt;expr>.</p></li><li><code>(default <span>&lt;expr></span>)</code>
+<p>Specify a default value.
+As the final input parameter, makes the Scheme parameter
+optional, defaulting to &lt;expr>.</p></li><li><code>(array <span>&lt;type></span> [<span>&lt;length></span>])</code>
+<p>An array type.
+Length must be specified for return and result parameters.
+If specified, length can be either an integer, indicating a fixed size,
+or the symbol null, indicating a NULL-terminated array.</p></li></ul><p>
+</p><div><a name="h2_StandardModules"></a><h2>Standard Modules</h2></div><p>
+</p><p>A number of SRFIs are provided in the default installation.  Note that
+SRFIs 0, 6, 23, 46 and 62 are built into the default environment so
+there's no need to import them.  SRFI 22 is available with the "-r"
+command-line option.  This list includes popular SRFIs or SRFIs used
+in standard Chibi modules (many other SRFIs are available on
+snow-fort):
+</p><ul><li><a href="http://srfi.schemers.org/srfi-0/srfi-0.html">(srfi 0)  - cond-expand</a></li><li><a href="http://srfi.schemers.org/srfi-1/srfi-1.html">(srfi 1)  - list library</a></li><li><a href="http://srfi.schemers.org/srfi-2/srfi-2.html">(srfi 2)  - and-let*</a></li><li><a href="http://srfi.schemers.org/srfi-6/srfi-6.html">(srfi 6)  - basic string ports</a></li><li><a href="http://srfi.schemers.org/srfi-8/srfi-8.html">(srfi 8)  - receive</a></li><li><a href="http://srfi.schemers.org/srfi-9/srfi-9.html">(srfi 9)  - define-record-type</a></li><li><a href="http://srfi.schemers.org/srfi-11/srfi-11.html">(srfi 11) - let-values/let*-values</a></li><li><a href="http://srfi.schemers.org/srfi-14/srfi-14.html">(srfi 14) - character-set library</a></li><li><a href="http://srfi.schemers.org/srfi-16/srfi-16.html">(srfi 16) - case-lambda</a></li><li><a href="http://srfi.schemers.org/srfi-18/srfi-18.html">(srfi 18) - multi-threading support</a></li><li><a href="http://srfi.schemers.org/srfi-22/srfi-22.html">(srfi 22) - running scheme scripts on Unix</a></li><li><a href="http://srfi.schemers.org/srfi-23/srfi-23.html">(srfi 23) - error reporting mechanism</a></li><li><a href="http://srfi.schemers.org/srfi-26/srfi-26.html">(srfi 26) - cut/cute partial application</a></li><li><a href="http://srfi.schemers.org/srfi-27/srfi-27.html">(srfi 27) - sources of random bits</a></li><li><a href="http://srfi.schemers.org/srfi-33/srfi-33.html">(srfi 33) - bitwise operators</a></li><li><a href="http://srfi.schemers.org/srfi-38/srfi-38.html">(srfi 38) - read/write shared structures</a></li><li><a href="http://srfi.schemers.org/srfi-39/srfi-39.html">(srfi 39) - parameter objects</a></li><li><a href="http://srfi.schemers.org/srfi-41/srfi-41.html">(srfi 41) - streams</a></li><li><a href="http://srfi.schemers.org/srfi-46/srfi-46.html">(srfi 46) - basic syntax-rules extensions</a></li><li><a href="http://srfi.schemers.org/srfi-55/srfi-55.html">(srfi 55) - require-extension</a></li><li><a href="http://srfi.schemers.org/srfi-62/srfi-62.html">(srfi 62) - s-expression comments</a></li><li><a href="http://srfi.schemers.org/srfi-69/srfi-69.html">(srfi 69) - basic hash tables</a></li><li><a href="http://srfi.schemers.org/srfi-95/srfi-95.html">(srfi 95) - sorting and merging</a></li><li><a href="http://srfi.schemers.org/srfi-98/srfi-98.html">(srfi 98) - environment access</a></li><li><a href="http://srfi.schemers.org/srfi-99/srfi-99.html">(srfi 99) - ERR5RS records</a></li><li><a href="http://srfi.schemers.org/srfi-101/srfi-101.html">(srfi 101) - purely functional random-access pairs and lists</a></li><li><a href="http://srfi.schemers.org/srfi-111/srfi-111.html">(srfi 111) - boxes</a></li><li><a href="http://srfi.schemers.org/srfi-113/srfi-113.html">(srfi 113) - sets and bags</a></li><li><a href="http://srfi.schemers.org/srfi-115/srfi-115.html">(srfi 115) - Scheme regular expressions</a></li><li><a href="http://srfi.schemers.org/srfi-116/srfi-116.html">(srfi 116) - immutable list library</a></li><li><a href="http://srfi.schemers.org/srfi-117/srfi-117.html">(srfi 117) - mutable queues</a></li><li><a href="http://srfi.schemers.org/srfi-121/srfi-121.html">(srfi 121) - generators</a></li><li><a href="http://srfi.schemers.org/srfi-124/srfi-124.html">(srfi 124) - ephemerons</a></li><li><a href="http://srfi.schemers.org/srfi-125/srfi-125.html">(srfi 125) - intermediate hash tables</a></li><li><a href="http://srfi.schemers.org/srfi-127/srfi-127.html">(srfi 127) - lazy sequences</a></li><li><a href="http://srfi.schemers.org/srfi-128/srfi-128.html">(srfi 128) - comparators (reduced)</a></li><li><a href="http://srfi.schemers.org/srfi-129/srfi-129.html">(srfi 129) - titlecase procedures</a></li><li><a href="http://srfi.schemers.org/srfi-130/srfi-130.html">(srfi 130) - cursor-based string library</a></li><li><a href="http://srfi.schemers.org/srfi-132/srfi-132.html">(srfi 132) - sort libraries</a></li><li><a href="http://srfi.schemers.org/srfi-133/srfi-133.html">(srfi 133) - vector library</a></li><li><a href="http://srfi.schemers.org/srfi-134/srfi-134.html">(srfi 134) - immutable deques</a></li><li><a href="http://srfi.schemers.org/srfi-135/srfi-135.html">(srfi 135) - immutable texts</a></li><li><a href="http://srfi.schemers.org/srfi-139/srfi-139.html">(srfi 139) - syntax parameters</a></li><li><a href="http://srfi.schemers.org/srfi-141/srfi-141.html">(srfi 141) - integer division</a></li><li><a href="http://srfi.schemers.org/srfi-143/srfi-142.html">(srfi 142) - bitwise operations</a></li><li><a href="http://srfi.schemers.org/srfi-143/srfi-143.html">(srfi 143) - fixnums</a></li><li><a href="http://srfi.schemers.org/srfi-144/srfi-144.html">(srfi 144) - flonums</a></li><li><a href="http://srfi.schemers.org/srfi-145/srfi-145.html">(srfi 145) - assumptions</a></li><li><a href="http://srfi.schemers.org/srfi-147/srfi-147.html">(srfi 147) - custom macro transformers</a></li><li><a href="http://srfi.schemers.org/srfi-151/srfi-151.html">(srfi 151) - bitwise operators</a></li><li><a href="http://srfi.schemers.org/srfi-154/srfi-154.html">(srfi 154) - first-class dynamic extents</a></li><li><a href="http://srfi.schemers.org/srfi-158/srfi-158.html">(srfi 158) - generators and accumulators</a></li><li><a href="http://srfi.schemers.org/srfi-160/srfi-160.html">(srfi 160) - homogeneous numeric vector libraries</a></li><li><a href="http://srfi.schemers.org/srfi-165/srfi-165.html">(srfi 165) - the environment Monad</a></li><li><a href="http://srfi.schemers.org/srfi-166/srfi-166.html">(srfi 166) - monadic formatting</a></li><li><a href="http://srfi.schemers.org/srfi-179/srfi-179.html">(srfi 179) - nonempty intervals and generalized arrays</a></li><li><a href="http://srfi.schemers.org/srfi-188/srfi-188.html">(srfi 188) - splicing binding constructs for syntactic keywords</a></li></ul><p>
+</p><p>Additional non-standard modules are put in the <code>(chibi)</code> module
+namespace.
+</p><ul><li><a href="lib/chibi/app.html">(chibi app) - Unified option parsing and config</a></li><li><a href="lib/chibi/ast.html">(chibi ast) - Abstract Syntax Tree and other internal data types</a></li><li><a href="lib/chibi/assert.html">(chibi assert) - A nicer assert macro</a></li><li><a href="lib/chibi/base64.html">(chibi base64) - Base64 encoding and decoding</a></li><li><a href="lib/chibi/bytevector.html">(chibi bytevector) - Bytevector Utilities</a></li><li><a href="lib/chibi/config.html">(chibi config) - General configuration management</a></li><li><a href="lib/chibi/crypto/md5.html">(chibi crypto md5) - MD5 hash</a></li><li><a href="lib/chibi/crypto/rsa.html">(chibi crypto rsa) - RSA public key encryption</a></li><li><a href="lib/chibi/crypto/sha2.html">(chibi crypto sha2) - SHA-2 hash</a></li><li><a href="lib/chibi/diff.html">(chibi diff) - LCS Algorithm and diff utilities</a></li><li><a href="lib/chibi/disasm.html">(chibi disasm) - Disassembler for the virtual machine</a></li><li><a href="lib/chibi/doc.html">(chibi doc) - Chibi documentation utilities</a></li><li><a href="lib/chibi/edit-distance.html">(chibi edit-distance) - A levenshtein distance implementation</a></li><li><a href="lib/chibi/equiv.html">(chibi equiv) - A version of <code><span>equal?</span></code> which is guaranteed to terminate</a></li><li><a href="lib/chibi/filesystem.html">(chibi filesystem) - Interface to the filesystem and file descriptor objects</a></li><li><a href="lib/chibi/generic.html">(chibi generic) - Generic methods for CLOS-style object oriented programming</a></li><li><a href="lib/chibi/heap-stats.html">(chibi heap-stats) - Utilities for gathering statistics on the heap</a></li><li><a href="lib/chibi/io.html">(chibi io) - Various I/O extensions and custom ports</a></li><li><a href="lib/chibi/iset/base.html">(chibi iset base) - Compact integer sets</a></li><li><a href="lib/chibi/iset/base.html">(chibi iset base) - Compact integer sets</a></li><li><a href="lib/chibi/iset/constructors.html">(chibi iset constructors) - Compact integer set construction</a></li><li><a href="lib/chibi/iset/iterators.html">(chibi iset iterators) - Iterating over compact integer sets</a></li><li><a href="lib/chibi/json.html">(chibi json) - JSON reading and writing</a></li><li><a href="lib/chibi/loop.html">(chibi loop) - Fast and extensible loop syntax</a></li><li><a href="lib/chibi/match.html">(chibi match) - Intuitive and widely supported pattern matching syntax</a></li><li><a href="lib/chibi/math/prime.html">(chibi math prime) - Prime number utilities</a></li><li><a href="lib/chibi/memoize.html">(chibi memoize) - Procedure memoization</a></li><li><a href="lib/chibi/mime.html">(chibi mime) - Parse MIME files into SXML</a></li><li><a href="lib/chibi/modules.html">(chibi modules) - Introspection for the module system itself</a></li><li><a href="lib/chibi/net.html">(chibi net) - Simple networking interface</a></li><li><a href="lib/chibi/net/http-server.html">(chibi net http-server) - Simple http-server with servlet support</a></li><li><a href="lib/chibi/net/servlet.html">(chibi net servlet) - HTTP servlets for http-server or CGI</a></li><li><a href="lib/chibi/optional.html">(chibi optional) - Syntax to support optional and named keyword arguments</a></li><li><a href="lib/chibi/parse.html">(chibi parse) - Parser combinators with convenient syntax</a></li><li><a href="lib/chibi/pathname.html">(chibi pathname) - Utilities to decompose and manipulate pathnames</a></li><li><a href="lib/chibi/process.html">(chibi process) - Interface to spawn processes and handle signals</a></li><li><a href="lib/chibi/repl.html">(chibi repl) - A full-featured Read/Eval/Print Loop</a></li><li><a href="lib/chibi/scribble.html">(chibi scribble) - A parser for the scribble syntax used to write this manual</a></li><li><a href="lib/chibi/string.html">(chibi string) - Cursor-based string library (predecessor to SRFI 130)</a></li><li><a href="lib/chibi/stty.html">(chibi stty) - A high-level interface to ioctl</a></li><li><a href="lib/chibi/sxml.html">(chibi sxml) - SXML utilities</a></li><li><a href="lib/chibi/system.html">(chibi system) - Access to the host system and current user information</a></li><li><a href="lib/chibi/temp-file.html">(chibi temp-file) - Temporary file and directory creation</a></li><li><a href="lib/chibi/test.html">(chibi test) - A simple unit testing framework</a></li><li><a href="lib/chibi/time.html">(chibi time) - An interface to the current system time</a></li><li><a href="lib/chibi/trace.html">(chibi trace) - A utility to trace procedure calls</a></li><li><a href="lib/chibi/type-inference.html">(chibi type-inference) - An easy-to-use type inference system</a></li><li><a href="lib/chibi/uri.html">(chibi uri) - Utilities to parse and construct URIs</a></li><li><a href="lib/chibi/weak.html">(chibi weak) - Data structures with weak references</a></li></ul><p>
+</p><div><a name="h2_SnowPackageManager"></a><h2>Snow Package Manager</h2></div><p>
+</p><p>Beyond the distributed modules, Chibi comes with a package manager
+based on <a href="https://small.r7rs.org/wiki/Snow/">Snow2</a>
+which can be used to share R7RS libraries.  Packages are distributed
+as tar gzipped files called "snowballs," and may contain multiple
+libraries.  The program is installed as <code><span>snow-chibi</span></code>.  The
+"help" subcommand can be used to list all subcommands and options.
+Note by default <code><span>snow-chibi</span></code> uses an image file to speed-up
+loading (since it loads many libraries) - if you have any difficulties
+with image files on your platform you can run
+</p><pre class="command"><code>snow-chibi --noimage</code></pre><p> to disable this feature.
+</p><div><a name="h4_QueryingPackagesandStatus"></a><h4>Querying Packages and Status</h4></div><p>
+</p><p>By default <code><span>snow-chibi</span></code> looks for packages in the public
+repository <a href="http://snow-fort.org/">http://snow-fort.org/</a>,
+though you can customize this with the <code><span>--repository-uri</span></code> or
+<code><span>--repo</span></code> option (e.g. "http://snow-fort.org/s/repo.scm").
+</p><p>Packages can be browsed on the site, but you can also search and query
+from the command-line tool.
+</p><ul><li>search terms ... - search for packages
+<p>Print a list of available packages matching the given keywords.</p></li><li>show names ... - show package descriptions
+<p>Show detailed information for the listed packages, which can
+be sexp library names or the dotted shorthand used by chibi.  For example,
+<code><span>snow-chibi</span> <span>show</span> <span class="string">"(chibi match)"</span></code> can be shortened as
+<code><span>snow-chibi</span> <span>show</span> <span>chibi.match</span></code>.</p></li><li>status names ... - print package status
+<p>Print the installed version of the given packages.  Uninstalled
+packages will not be shown.  If no names are given, prints all
+currently installed packages.</p></li><li>implementations - print list of available implementations
+<p>Print the currently installed Scheme implementations supported
+by <code><span>snow-chibi</span></code>.  If an implementation is found but has an
+older version, a warning is printed.</p></li></ul><p>
+</p><div><a name="h4_ManagingPackages"></a><h4>Managing Packages</h4></div><p>
+</p><p>The basic package management functionality, installing upgrading and
+removing packages.
+</p><p>By default the packages will be managed for Chibi. You can specify
+what Scheme implementation to install, upgrade... with
+<code><span>--implementations</span></code> or <code><span>--impls</span></code> option. Specify "all"
+to manage all supported implementations.
+</p><ul><li>install names ... - install packages
+<p>Install the given packages.  Package names can be sexp lists or
+use the dotted shorthand.  Explicit names for packages are optional,
+as a package can always be referred to by the name of any library it
+contains.  If multiple packages provide libraries with the same name,
+you will be asked to confirm which implementation to install.</p>
+
+<p>You can also bypass the repository and install a manually downloaded
+snowball by giving a path to that file instead of a name. No package
+dependencies will be checked for install in this case</p></li><li>upgrade names ... - upgrade installed packages
+<p>Upgrade the packages if new versions are available.
+If no names are given, upgrades all eligible packages.</p></li><li>remove names ... - remove packages
+<p>Uninstalls the given packages.  If the packages were not installed
+with <code><span>snow-chibi</span></code> they cannot be removed.</p></li><li>update - update local cache of remote repository
+<p><code><span>snow-chibi</span></code> keeps a local cache of the remote repository
+and updates only periodically for performance, but you can force an
+update with this command.</p></li></ul><p>
+</p><div><a name="h4_AuthoringPackages"></a><h4>Authoring Packages</h4></div><p>
+</p><p>Creating packages can be done with the <code><span>package</span></code> command,
+though other commands allow for uploading to public repositories.
+</p><p>By default the public repository is
+<a href="http://snow-fort.org/">http://snow-fort.org/</a> but you can
+customize this with the <code><span>--host</span></code> option.
+</p><ul><li>package files ... - create a package
+<p>Create a package snowball from the given files, which should
+be R7RS library files containing <code><span>define-library</span></code> forms.
+Include files are inferred and packaged automatically.  You can
+share packages directly, or upload them to a snow repository for
+easy automated install.</p></li><li>upload files ... - upload packages
+<p>Sign and upload to the default snow host.  The files may either
+be .tgz package files, or files containing define-library forms as
+in the <code><span>package</span></code> command, from which packages are generated
+automatically.  Before you can upload to the default host a key
+must be generated and registered first with the <code><span>gen-key</span></code>
+and <code><span>reg-key</span></code> commands.</p></li><li>gen-key - create a new key
+<p>Create a new key, with your name, email address, and optionally
+an RSA public key pair (disabled by default in the current implementation).
+This is saved locally to ~/.snow/priv-key.scm - you need to register it
+with reg-key before it can be used for uploads.</p></li><li>reg-key - register a key
+<p>Register your key on the default snow host.</p></li><li>sign file - sign a package
+<p>Sign a file with your key and write it to the .sig file.
+This can be used with the verify command for testing, but otherwise
+is not needed as the upload command generates the signature automatically.</p></li><li>verify sig-file - verify a signature
+<p>Print a message verifying if a signature is valid.</p></li></ul><p>
+</p><div><a name="h4_EasyPackaging"></a><h4>Easy Packaging</h4></div><p>
+</p><p>To encourage sharing code it's important to make it as easy as
+possible to create packages, while encouraging documentation and
+tests.  In particular, you should never need to duplicate information
+anywhere.  Thus the <code><span>package</span></code> command automatically locates
+and packages include files (and data and ffi files) and determines
+dependencies for you.  In addition, it can automatically handle
+versions, docs and tests:
+</p><ul><li>version - can come explicitly from the <code><span>--version</span></code> option, or the <code><span>--version-file=&lt;file></span></code> option</li><li>docs - can come explicitly from the <code><span>--doc=&lt;file></span></code> option, or be extracted automatically from literate documentation with <code><span>doc-for-scribble</span></code></li><li>tests - can come explicitly from the <code><span>--test=&lt;prog-file></span></code> option, or the <code><span>--test-library=&lt;lib-name></span></code> which will generate a program to run just the <code><span>run-tests</span></code> thunk in that library</li></ul><p>
+</p><p>Other useful meta-info options include:
+</p><ul><li><code><span>--authors</span></code> - specify the package authors (comma-delimited)</li><li><code><span>--maintainers</span></code> - specify the package maintainers (comma-delimited)</li><li><code><span>--license</span></code> - specify the package licence</li></ul><p>
+</p><p>These three are typically always the same, so it's useful to save them
+in your ~/.snow/config.scm file.  This file contains a single sexp and
+can specify any option, for example:
+</p><pre><code>((repository-uri <span class="string">"http://alopeke.gr/repo.scm"</span>)
+ (command
+  (package
+   (authors <span class="string">"Socrates &lt;hemlock@aol.com>"</span>)
+   (doc-from-scribble #t)
+   (version-file <span class="string">"VERSION"</span>)
+   (test-library (append-to-last <span>-test</span>))
+   (license <span>gpl</span>))))
+</code></pre><p>
+</p><p>Top-level snow options are represented as a flat alist.  Options
+specific to a command are nested under <code>(command (name <span>...</span>))</code>,
+with most options here being for <code><span>package</span></code>.  Here unless
+overridden on the command-line, all packages will use the given author
+and license, try to extract literate docs from the code, look for a
+version in the file "VERSION", and try to find a test with the same
+library name appended with <code><span>-test</span></code>, e.g. for the library
+<code>(socratic <span>method</span>)</code>, the test library would be
+<code>(socratic <span>method-test</span>)</code>.  This form is an alternate to using
+an explicit test-library name, and encourages you to keep your tests
+close to the code they test.  In the typical case, if using these
+conventions, you can thus simply run <code><span>snow-chibi</span> <span>package</span>
+<span>&lt;lib-file></span></code> without any other options.
+</p><div><a name="h4_OtherImplementations"></a><h4>Other Implementations</h4></div><p>
+</p><p>Although the command is called <code><span>snow-chibi</span></code>, it supports
+several other R7RS implementations.  The <code><span>implementations</span></code>
+command tells you which you currently have installed.  The following
+are currently supported:
+</p><ul><li>chibi - native support as of version 0.7.3</li><li>chicken - version >= 4.9.0 with the <code><span>r7rs</span></code> egg</li><li>cyclone - version >= 0.5.3</li><li>foment - version >= 0.4</li><li>gauche - version >= 0.9.4</li><li>kawa - version >= 2.0; you need to add the install dir to the search path, e.g. <code><span>-Dkawa.import.path=/usr/local/share/kawa</span></code></li><li>larceny - version 0.98; you need to add "lib/Snow" to the paths in startup.sch</li><li>sagittarius - version >= 0.98</li></ul><p>
+</p><div id="footer"></div></div></body></html>
+
